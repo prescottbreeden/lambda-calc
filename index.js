@@ -51,10 +51,6 @@ const result = 'bool' ? 'exp1' : 'exp2'
 const T = K
 const F = KI // = CK
 
-T.inspect = () => 'T / K'
-F.inspect = () => 'F / KI'
-
-
 // Not := λp.pFT
 const Not = p => p(F)(T);
 Not(T)
@@ -95,3 +91,100 @@ const beq = (p) => (q) => p(q)(Not(q))
 beq(T)(F)
 beq(T)(T)
 beq(F)(F)
+
+// de morgan's laws
+// !(p && q) === (!p) || (!q)
+
+// (λxy.x y ((λfab.fba) y)) 
+// ((λfab.fba) ((λxy.xyx) p q))
+// ((λf.ff) ((λfab.fba) p) ((λfab.fba) q))
+
+beq(Not(And(T)(F))(Or(Not(T))(Not(F))))
+
+// SK cominator calculus
+
+// Starling
+// S := λabc.ac(bc)
+const S = a => b => c => a(c)(b(c));
+
+const Identity = S(K)(K);
+Identity(42);
+
+// Kestrel
+// K := λab.a
+
+// -------------------
+// Numbers
+// -------------------
+// zero one two three succ
+// zero once twice thrice etc.
+
+// zero := λfa.a
+const zero = f => a => a
+zero(I)(2)
+
+// once := λfa.fa
+const once = f => a => f(a);
+once(I)(2)
+once(Not)(T)
+
+// twice := λfa.f(fa)
+const twice = f => a => f(f(a));
+twice(I)(2)
+twice(Not)(T)
+
+// thrice := λfa.f(f(f(a)))
+const thrice = f => a => f(f(f(a)));
+thrice(Not)(T)
+
+// Succ := λn.?
+const succ = n => f => a => f(n(f)(a));
+succ(zero)(Not)(T)
+succ(once)(Not)(T)
+jsnum = n => n(x => x + 1)(0)
+jsnum(succ(zero))
+jsnum(succ(succ(zero)))
+jsnum(succ(succ(succ(zero))))
+
+const n1 = succ(zero);
+const n2 = succ(n1);
+const n3 = succ(n2);
+const n4 = succ(n3);
+
+jsnum(succ(n4))
+
+// bluebird := λfga.f(ga)
+const B = f => g => a => f(g(a));
+B(Not)(Not)(T)
+B(jsnum)(succ)(n4)
+
+// Successor := λnf.Bf(nf)
+const S = n => f => B(f)(n(f));
+jsnum(S(zero))
+// jsnum(S(once)) hmmmmmmmm fail
+
+// Add := λnk.n(λnf.Bf(nf) k)
+const Add = n => k => n(succ)(k)
+const n5 = Add(n3)(n2)
+const n6 = Add(n3)(n3)
+const n7 = Add(n3)(n4)
+
+// Mult := λnkf.n(kf)
+// Mult := λfga.f(ga)
+const mult = n => k => f => n(k(f))
+const mUlt = n => k => B(n)(k)
+const Mult = B
+jsnum(Mult(n5)(n4))
+
+// Pow := λnk.kn
+// Thrush := λaf.fa
+const Pow = n => k => k(n)
+jsnum(Pow(n2)(n5))
+
+const Is0 = n => n(K(F))(T)
+Is0(zero)
+Is0(once)
+
+// -------------------
+// Data Structures
+// -------------------
